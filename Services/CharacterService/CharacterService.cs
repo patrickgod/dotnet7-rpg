@@ -93,8 +93,10 @@ namespace dotnet_rpg.Services.CharacterService
             try
             {
                 var character = 
-                    await _context.Characters.FirstOrDefaultAsync(c => c.Id == updatedCharacter.Id);
-                if (character is null)
+                    await _context.Characters
+                        .Include(c => c.User)
+                        .FirstOrDefaultAsync(c => c.Id == updatedCharacter.Id);
+                if (character is null || character.User!.Id != GetUserId())
                     throw new Exception($"Character with Id '{updatedCharacter.Id}' not found.");
 
                 character.Name = updatedCharacter.Name;
